@@ -1,4 +1,4 @@
-package qaGuru;
+package qaguru;
 
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
