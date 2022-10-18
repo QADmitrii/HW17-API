@@ -5,116 +5,124 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import qaguru.models.LombokBody;
+import qaguru.models.LombokResponse;
+import qaguru.pojodata.PojoBodyData;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static io.restassured.RestAssured.given;
+import static qaguru.specs.ErrorsSpecs.errorResponse;
+import static qaguru.specs.LoginSpecs.loginRequestSpec;
+import static qaguru.specs.LoginSpecs.loginResponseSpec;
+import static qaguru.specs.RegSpecs.regRequestSpec;
+import static qaguru.specs.RegSpecs.regResponseSpec;
 
 public class RegistrationTest {
-    String urlReg = "https://reqres.in/api/register";
-    String urlLog = "https://reqres.in/api/login";
-
 
     @Test
     @DisplayName("Positive. Registration account")
     public void registrationTestSuccessful() {
-        TestData testData = new TestData();
-        testData
-                .setEmail("eve.holt@reqres.in")
-                .setPassword("pistol");
+        LombokBody body = new LombokBody();
 
-        given()
-                .contentType(JSON)
-                .body(testData)
-                .log().body()
+        body.setEmail("eve.holt@reqres.in");
+        body.setPassword("pistol");
+        LombokResponse response = given()
+
+                .spec(regRequestSpec)
+                .body(body)
                 .when()
-                .post(urlReg)
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("id", is(4))
-                .body("token", is("QpwL5tke4Pnpja7X4"));
+                .spec(regResponseSpec)
+                .extract()
+                .as(LombokResponse.class);
+
+        assertThat(response.getToken()).isEqualTo("QpwL5tke4Pnpja7X4");
     }
 
     @Test
     @DisplayName("Positive. Login account")
-    public void deleteUser() {
-        String body = "{\n" +
-                "    \"email\": \"eve.holt@reqres.in\",\n" +
-                "    \"password\": \"pistol\"\n" +
-                "}";
-        given()
-                .contentType(JSON)
+    public void loginAccount() {
+        LombokBody body = new LombokBody();
+
+        body.setEmail("eve.holt@reqres.in");
+        body.setPassword("pistol");
+        LombokResponse response = given()
+
+                .spec(loginRequestSpec)
                 .body(body)
-                .log().body()
                 .when()
-                .post(urlLog)
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("token", is("QpwL5tke4Pnpja7X4"));
+                .spec(loginResponseSpec)
+                .extract()
+                .as(LombokResponse.class);
+
+        assertThat(response.getToken()).isEqualTo("QpwL5tke4Pnpja7X4");
 
     }
 
     @Test
     @DisplayName("Negative. Registration account without pass")
     public void missingPasswordRegistrationTest() {
-        TestData testData = new TestData();
-        testData
+        PojoBodyData pojoBodyData = new PojoBodyData();
+        pojoBodyData
                 .setEmail("eve.holt@reqres.in");
+        LombokResponse response = given()
 
-        given()
-                .contentType(JSON)
-                .body(testData)
-                .log().body()
+                .spec(regRequestSpec)
+                .body(pojoBodyData)
                 .when()
-                .post(urlReg)
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .body("error", is("Missing password"));
+                .spec(errorResponse)
+                .extract()
+                .as(LombokResponse.class);
+
+        assertThat(response.getError()).isEqualTo("Missing password");
     }
 
     @Test
     @DisplayName("Negative. Registration account without email")
     public void missingEmailRegistrationTest() {
-        TestData testData = new TestData();
-        testData
+        PojoBodyData pojoBodyData = new PojoBodyData();
+        pojoBodyData
                 .setPassword("pistol");
 
-        given()
-                .contentType(JSON)
-                .body(testData)
-                .log().body()
+        LombokResponse response = given()
+
+                .spec(regRequestSpec)
+                .body(pojoBodyData)
                 .when()
-                .post(urlReg)
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .body("error", is("Missing email or username"));
+                .spec(errorResponse)
+                .extract()
+                .as(LombokResponse.class);
+
+        assertThat(response.getError()).isEqualTo("Missing email or username");
     }
 
     @Test
     @DisplayName("Negative. Registration account with wrong data")
     public void wrongEmailRegistrationTest() {
-        TestData testData = new TestData();
-        testData
+        PojoBodyData pojoBodyData = new PojoBodyData();
+        pojoBodyData
                 .setEmail("111#$!@#@test.io")
                 .setPassword("pistol");
 
-        given()
-                .contentType(JSON)
-                .body(testData)
-                .log().body()
+        LombokResponse response = given()
+
+                .spec(regRequestSpec)
+                .body(pojoBodyData)
                 .when()
-                .post(urlReg)
+                .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .body("error", is("Note: Only defined users succeed registration"));
+                .spec(errorResponse)
+                .extract()
+                .as(LombokResponse.class);
+
+        assertThat(response.getError()).isEqualTo("Note: Only defined users succeed registration");
     }
 
 

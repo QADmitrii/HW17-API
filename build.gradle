@@ -1,22 +1,42 @@
 plugins {
     id 'java-library'
+    id 'io.qameta.allure' version '2.10.0'
+    id "io.freefair.lombok" version "6.0.0-m2"
 }
 
 repositories {
     mavenCentral()
 }
 
-def restAssuredVersion = "5.1.1",
-    junitVersion = "5.8.2",
+def allureVersion = "2.19.0",
+    restAssuredVersion = "5.1.1",
+    assertJVersion = "3.23.1",
+    junitVersion = "5.9.0",
     slf4jVersion = "1.7.32"
+
+allure {
+    report {
+        version.set(allureVersion)
+    }
+    adapter { // отвечает за появление папочки build/allure-results
+        aspectjWeaver.set(true) //обработка аннотации @Step
+        frameworks {
+            junit5 { //название фреймворка
+                adapterVersion.set(allureVersion) //версия интеграции фреймворка и Allure
+            }
+        }
+    }
+}
 
 dependencies {
     testImplementation(
+            "com.codeborne:selenide:6.7.2",
+            "io.qameta.allure:allure-selenide:$allureVersion",
             "io.rest-assured:rest-assured:$restAssuredVersion",
+            "io.qameta.allure:allure-rest-assured:$allureVersion",
+            "org.assertj:assertj-core:$assertJVersion",
             "org.junit.jupiter:junit-jupiter:$junitVersion",
-            "org.slf4j:slf4j-simple:$slf4jVersion",
-            "com.fasterxml.jackson.core:jackson-databind:2.7.9.5",
-            'com.codeborne:selenide:6.6.6'
+            "org.slf4j:slf4j-simple:$slf4jVersion"
     )
 }
 

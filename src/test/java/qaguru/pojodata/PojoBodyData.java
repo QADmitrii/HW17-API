@@ -1,6 +1,6 @@
-package qaguru;
+package qaguru.pojodata;
 
-public class TestData {
+public class PojoBodyData {
 
     private String email;
     private String password;
@@ -11,7 +11,7 @@ public class TestData {
         return email;
     }
 
-    public TestData setEmail(String email) {
+    public PojoBodyData setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -20,7 +20,7 @@ public class TestData {
         return password;
     }
 
-    public TestData setPassword(String password) {
+    public PojoBodyData setPassword(String password) {
         this.password = password;
         return this;
     }
