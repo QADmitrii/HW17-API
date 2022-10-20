@@ -1,6 +1,5 @@
 package qaguru;
 
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import qaguru.models.LombokBody;
