@@ -27,4 +27,11 @@ public class LoginSpecs {
             .log(LogDetail.BODY)
             .expectBody("token", notNullValue())
             .build();
+    public static RequestSpecification getListUsers = with()
+            .filter(withCustomTemplates())
+            .baseUri("https://reqres.in")
+            .basePath("/api/users?page")
+            .log().uri()
+            .log().body()
+            .contentType(ContentType.JSON);
 }

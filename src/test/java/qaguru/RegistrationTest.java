@@ -8,9 +8,9 @@ import qaguru.pojodata.PojoBodyData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 import static qaguru.specs.ErrorsSpecs.errorResponse;
-import static qaguru.specs.LoginSpecs.loginRequestSpec;
-import static qaguru.specs.LoginSpecs.loginResponseSpec;
+import static qaguru.specs.LoginSpecs.*;
 import static qaguru.specs.RegSpecs.regRequestSpec;
 import static qaguru.specs.RegSpecs.regResponseSpec;
 
@@ -120,6 +120,20 @@ public class RegistrationTest {
                 .as(LombokResponse.class);
 
         assertThat(response.getError()).isEqualTo("Note: Only defined users succeed registration");
+    }
+    @Test
+    @DisplayName("Проверка списка пользователей с использованием Groovy")
+    public void getListUsersGroovyTest() {
+        given()
+                .spec(getListUsers)
+                .log().all()
+                .when()
+                .get()
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("data.findAll{it.email =~/.*?@reqres.in/}.email.flatten()",
+                        hasItem("emma.wong@reqres.in"));
     }
 
 
